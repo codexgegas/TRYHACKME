@@ -239,8 +239,6 @@ Since there isnt a flag for this we can only think about the possible informatio
 [3]: https://nmap.org/
 [4]: https://ippsec.rocks/#
 [5]: https://github.com/OJ/gobuster
-[6]: https://raw.githubusercontent.com/gwagstaff/CTF-Write-Ups/master/TryHackMe/Basic_Webapp/resources/webapp_80_files.png
 [7]: https://github.com/danielmiessler/SecLists
 [8]: https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite
 [9]: https://github.com/magnumripper/JohnTheRipper
-[10]: https://raw.githubusercontent.com/gwagstaff/CTF-Write-Ups/master/TryHackMe/Basic_Webapp/resources/webapp_ssh_kay.png
